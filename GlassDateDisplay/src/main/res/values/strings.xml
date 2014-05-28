@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">GlassDateDisplay</string>
+	<string name="app_name">GlassDateDisplay</string>
+	<string name="battery">Battery</string>
 </resources>
