@@ -26,6 +26,7 @@ public class DateDisplayService extends Service {
 	private Intent batteryStatus;
 	private Runnable hide;
 	BroadcastReceiver broadcastReceiver;
+	BroadcastReceiver batteryBroadcastReceiver;
 	private View mainView;
 
 	Handler handler;
@@ -74,8 +75,15 @@ public class DateDisplayService extends Service {
 			public void onReceive(Context ctx, Intent intent) {
 				if (intent.getAction().compareTo(Intent.ACTION_TIME_TICK) == 0) {
 					floatingDate.setText(format.format(new Date()));
-				} else if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
-					int batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+				}
+			}
+		};
+
+		batteryBroadcastReceiver = new BroadcastReceiver(){
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if (intent.getAction().equals(Intent.ACTION_BATTERY_CHANGED)) {
+					int batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 					battery.setText(String.valueOf(batteryLevel) + "%");
 				}
 			}
@@ -83,10 +91,9 @@ public class DateDisplayService extends Service {
 
 		registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_TIME_TICK));
 
-		IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-		batteryStatus = registerReceiver(broadcastReceiver, ifilter);
+		batteryStatus = registerReceiver(batteryBroadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-		int batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+		int batteryLevel = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
 		battery.setText(String.valueOf(batteryLevel) + "%");
 
 		//Useless if not  running on a phone
